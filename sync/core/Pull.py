@@ -211,9 +211,18 @@ class Pull:
     def from_git(self, track):
         zip_file = self._modules_folder.joinpath(track.id, f"{track.id}.zip")
 
+        # track オブジェクトから download_source を取得。なければ 'auto' をデフォルトとする。
+        download_preference = track.get('download_source', 'auto').lower()
+
         @Result.catching()
         def git_clone():
-            return GitUtils.clone_and_zip(track.update_to, zip_file)
+            # API token will be fetched from environment variable by GitUtils
+            return GitUtils.clone_or_download_release(
+                url=track.update_to,
+                out=zip_file,
+                module_id=track.id,
+                log_config=(self._config.enable_log, self._config.log_dir),
+                download_preference=download_preference)
 
         result = git_clone()
         if result.is_failure:
@@ -229,18 +238,22 @@ class Pull:
 
     def from_zip(self, track):
         zip_file = self._local_folder.joinpath(track.update_to)
-        changelog = self._local_folder.joinpath(track.changelog)
-        last_modified = zip_file.stat().st_mtime
+        changelog_file_path = None
+        if track.changelog: # track.changelog が None や空文字列でないことを確認
+            changelog_file_path = self._local_folder.joinpath(track.changelog)
 
         if not zip_file.exists():
             msg = f"{track.update_to} is not in {self._local_folder}"
             self._log.i(f"from_zip: [{track.id}] -> {msg}")
             return None, 0.0
 
-        if not changelog.exists():
-            changelog = None
+        last_modified = zip_file.stat().st_mtime
+        
+        actual_changelog_file = None
+        if changelog_file_path and changelog_file_path.exists():
+            actual_changelog_file = changelog_file_path
 
-        online_module = self._from_zip_common(track, zip_file, changelog, delete_tmp=False)
+        online_module = self._from_zip_common(track, zip_file, actual_changelog_file, delete_tmp=False)
         return online_module, last_modified
 
     def from_track(self, track):

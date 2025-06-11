@@ -191,8 +191,6 @@ class GithubTracks(BaseTracks):
     def is_module_repo(cls, repo):
         try:
             repo.get_contents("module.prop")
-            repo.get_contents("META-INF/com/google/android/update-binary")
-            repo.get_contents("META-INF/com/google/android/updater-script")
             return True
         except UnknownObjectException:
             return False

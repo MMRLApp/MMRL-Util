@@ -76,19 +76,15 @@ class LocalModule(AttrDict):
 
         cleaned_track = cls.clean_json(track)
 
-        try:
-            if ("#MAGISK" not in cls._zipfile.file_read("META-INF/com/google/android/updater-script")):
-                raise
-            if (not cls._zipfile.file_exists("META-INF/com/google/android/update-binary")):
-                raise
-        except BaseException:
-            msg = f"{file.name} is not a magisk module"
+        if not cls._zipfile.file_exists("module.prop"):
+            msg = f"'{file.name}' is not a valid Magisk module: 'module.prop' not found."
             raise MagiskModuleError(msg)
 
         try:
             props = cls._zipfile.file_read("module.prop")
-        except BaseException as err:
-            raise MagiskModuleError(err.args)
+        except Exception as err: # BaseExceptionからExceptionに変更し、エラーを連鎖させる
+            msg = f"Error reading 'module.prop' from '{file}': {err}"
+            raise MagiskModuleError(msg) from err
 
         obj = AttrDict()
         for item in props.splitlines():

@@ -2,7 +2,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional, Dict
 
 import requests
 from dateutil.parser import parse
@@ -32,10 +32,10 @@ class HttpUtils:
         return obj
 
     @classmethod
-    def download(cls, url: str, out: Path) -> float:
+    def download(cls, url: str, out: Path, headers: Optional[Dict[str, str]] = None) -> float:
         out.parent.mkdir(parents=True, exist_ok=True)
 
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, headers=headers)
         if response.status_code == 200:
             block_size = 1024
             with open(out, 'wb') as file:
