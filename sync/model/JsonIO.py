@@ -24,7 +24,7 @@ class JsonIO:
                     json.dump(self, f, indent=2)
             case ".yaml" | ".yml":
                 with open(file, "w") as f: 
-                    yaml.dump(self, f, indent=2, default_flow_style=False, Dumper=yaml.SafeDumper)
+                    yaml.dump(dict(self), f, indent=2, default_flow_style=False, Dumper=yaml.SafeDumper)
             case _:
                 raise ValueError(f"Invalid file extension: {file}")
 
