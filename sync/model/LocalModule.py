@@ -213,10 +213,10 @@ class LocalModule(AttrDict):
         if cls._zipfile.file_exists(f"webroot/index.html"):
             local_module.permissions.append("kernelsu.permission.WEBUI")
         
-        if cls._zipfile.file_exists(f"webroot/index.mmrl.html"):
+        if cls._zipfile.file_exists(f"webroot/index.mmrl.html") or cls._zipfile.file_exists(f"webroot/index.wx.html"):
             local_module.permissions.append("mmrl.permission.WEBUI")
             
-        if cls._zipfile.file_exists(f"webroot/config.mmrl.json"):
+        if cls._zipfile.file_exists(f"webroot/config.mmrl.json") or cls._zipfile.file_exists(f"webroot/config.json"):
             local_module.permissions.append("mmrl.permission.WEBUI_CONFIG")
         
         if cls._zipfile.file_exists(f"post-mount.sh") or cls._zipfile.file_exists(f"common/post-mount.sh"):
@@ -227,6 +227,9 @@ class LocalModule(AttrDict):
         
         if len([name for name in cls._zipfile.namelist() if name.endswith('.apk')]) != 0:
             local_module.permissions.append("mmrl.permission.APKS")
+
+        if len([name for name in cls._zipfile.namelist() if name.endswith('.dex')]) != 0:
+            local_module.permissions.append("mmrl.permission.DEXS")
         
         features = {
             "service": cls._zipfile.file_exists(f"service.sh") or cls._zipfile.file_exists(f"common/service.sh"),
@@ -292,3 +295,4 @@ class LocalModule(AttrDict):
             return cls.__annotations__
 
         return {k: v.__name__ for k, v in cls.__annotations__.items() if v is not None and v is not False}
+
