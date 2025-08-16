@@ -72,7 +72,7 @@ class LocalModule(AttrDict):
 
     @classmethod
     def load(cls, file, track, config):    
-        zip_compression = track.deep_get("options.archive.compression", default="stored")
+        zip_compression = track.deep_get("options.archive.compression", default="store")
         disable_metadata = track.deep_get("options.disableRemoteMetadata", default=False)
         
         cls._log = Log("LocalModule", enable_log=config.enable_log, log_dir=config.log_dir)

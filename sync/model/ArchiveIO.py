@@ -1,4 +1,4 @@
-import zipfile_xz as zipfile
+import zipxz as zipfile
 
 class ArchiveIO:
     def __init__(self, file, mode, compression="store"):
