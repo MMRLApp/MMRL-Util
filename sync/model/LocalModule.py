@@ -28,6 +28,9 @@ class LocalModule(AttrDict):
     author: str
     description: str
     
+    # KernelSU supported props
+    metamodule: str | int | bool # https://kernelsu.org/guide/metamodule.html#basic-requirements
+    
     added: float
     timestamp: float
     size: float
