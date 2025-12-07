@@ -1,3 +1,2 @@
 #!/bin/bash
-
-python3 -m pip install -e .
+bash build.sh && python3 -m pip install -e .

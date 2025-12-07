@@ -23,6 +23,9 @@ class LocalModule(AttrDict):
     timestamp: float
     size: float
     
+    # KernelSU supported props
+    metamodule: str # https://kernelsu.org/guide/metamodule.html#basic-requirements
+    
     # FoxMMM supported props
     maxApi: int
     minApi: int

@@ -1,3 +1,2 @@
 #!/bin/bash
-
-twine upload dist/*
+bash build.sh && twine upload dist/*

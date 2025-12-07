@@ -32,6 +32,9 @@ class LocalModule(AttrDict):
     timestamp: float
     size: float
     
+    # KernelSU supported props
+    metamodule: str # https://kernelsu.org/guide/metamodule.html#basic-requirements
+    
     # FoxMMM supported props
     maxApi: int
     minApi: int
@@ -191,11 +194,7 @@ class LocalModule(AttrDict):
             cls._log.i(f"load: [{track.id}] -> found {webui_config_file}")
             config_raw_json = json.loads(cls._zipfile.file_read(webui_config_file))
             local_module.permissions = config_raw_json.get("permissions", [])
-        
-        # https://kernelsu.org/guide/metamodule.html#basic-requirements
-        if local_module.get("metamodule") in [1, True, "true", "True"]:
-            local_module.permissions.append("kernelsu.permission.METAMODULE")
-        
+
         if cls._zipfile.file_exists(f"service.sh") or cls._zipfile.file_exists(f"common/service.sh"):
             local_module.permissions.append("magisk.permission.SERVICE")
 
@@ -234,6 +233,9 @@ class LocalModule(AttrDict):
 
         if len([name for name in cls._zipfile.namelist() if name.endswith('.dex')]) != 0:
             local_module.permissions.append("mmrl.permission.DEXS")
+
+        if local_module.get("metamodule") in [1, True, "true", "True"]:
+            local_module.permissions.append("kernelsu.permission.METAMODULE")
         
         features = {
             "service": cls._zipfile.file_exists(f"service.sh") or cls._zipfile.file_exists(f"common/service.sh"),
