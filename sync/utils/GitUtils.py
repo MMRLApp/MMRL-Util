@@ -21,7 +21,7 @@ class GitUtils:
             return None
 
     @classmethod
-    def _get_repo_name_from_url(cls, url: str) -> Optional[tuple[str, str]]:
+    def get_repo_name_from_url(cls, url: str) -> Optional[tuple[str, str]]:
         """Extracts owner and repo name from GitHub URL."""
         # Handles https://github.com/owner/repo.git and git@github.com:owner/repo.git
         match = re.match(r"(?:https?://github\.com/|git@github\.com:)([^/]+)/([^/.]+)(?:\.git)?", url, re.IGNORECASE)
@@ -35,7 +35,7 @@ class GitUtils:
         enable_log, log_dir_path = log_config
         logger = Log("GitUtils", enable_log=enable_log, log_dir=log_dir_path)
         api_token = os.getenv("GITHUB_TOKEN")       
-        repo_parts = cls._get_repo_name_from_url(url)
+        repo_parts = cls.get_repo_name_from_url(url)
         gh_instance: Optional[Github] = None
         if api_token:
             gh_instance = Github(auth=Auth.Token(api_token))

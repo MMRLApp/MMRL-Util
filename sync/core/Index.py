@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from git import Repo
 from tabulate import tabulate
@@ -13,7 +14,7 @@ from ..model import (
     OnlineModule
 )
 from ..track import LocalTracks
-from ..utils import Log
+from ..utils import Log, GitHubGraphQLAPI, GitUtils
 
 
 class Index:
@@ -29,6 +30,10 @@ class Index:
         self._config = config
 
         self._json_folder = Config.get_json_folder(root_folder)
+        
+        # Initialize GitHub API if token is available
+        api_token = os.getenv("GITHUB_TOKEN")
+        self._github_api = GitHubGraphQLAPI(api_token) if api_token else None
 
         # noinspection PyTypeChecker
         self.modules_json = None
@@ -90,7 +95,22 @@ class Index:
         @Result.catching()
         def get_online_module():
             local_module = LocalModule.load(zip_file, track, self._config)
-            return OnlineModule.from_dict(local_module)
+            online_module = OnlineModule.from_dict(local_module)
+            
+            # Try to fetch GitHub stars if source is a valid GitHub URL
+            if self._github_api and track.source:
+                repo_info = GitUtils.get_repo_name_from_url(track.source)
+                if repo_info:
+                    owner, repo = repo_info
+                    try:
+                        stars = self._github_api.get_stargazers_count(owner, repo)
+                        if stars is not None:
+                            online_module.stars = stars
+                            self._log.d(f"get_online_module: [{track.id}] -> fetched {stars} stars from {owner}/{repo}")
+                    except Exception as e:
+                        self._log.w(f"get_online_module: [{track.id}] -> failed to fetch stars: {e}")
+            
+            return online_module
 
         result = get_online_module()
         if result.is_failure:
