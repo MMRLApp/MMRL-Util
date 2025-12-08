@@ -87,3 +87,17 @@ class GitHubGraphQLAPI:
             return parse(repository["pushedAt"])
         except TypeError:
             return None
+
+    def get_stargazers_count(self, owner: str, name: str) -> Optional[int]:
+        repository = self._query_repository(
+            owner=owner,
+            name=name,
+            query="stargazerCount"
+        )
+        if repository is None:
+            return None
+
+        try:
+            return int(repository["stargazerCount"])
+        except (TypeError, ValueError, KeyError):
+            return None

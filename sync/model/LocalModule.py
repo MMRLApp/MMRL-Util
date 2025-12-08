@@ -31,6 +31,7 @@ class LocalModule(AttrDict):
     added: float
     timestamp: float
     size: float
+    stars: int
     
     # KernelSU supported props
     metamodule: str # https://kernelsu.org/guide/metamodule.html#basic-requirements
