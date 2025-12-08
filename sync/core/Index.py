@@ -1,6 +1,5 @@
 from datetime import datetime
 import os
-import re
 
 from git import Repo
 from tabulate import tabulate
@@ -15,7 +14,7 @@ from ..model import (
     OnlineModule
 )
 from ..track import LocalTracks
-from ..utils import Log, GitHubGraphQLAPI
+from ..utils import Log, GitHubGraphQLAPI, GitUtils
 
 
 class Index:
@@ -91,16 +90,6 @@ class Index:
             update_json=update_json,
             online_module=online_module,
         )
-    
-    def _extract_github_repo(self, url):
-        """Extract owner and repo name from a GitHub URL."""
-        if not url:
-            return None
-        # Matches https://github.com/owner/repo or git@github.com:owner/repo.git
-        match = re.match(r"(?:https?://github\.com/|git@github\.com:)([^/]+)/([^/.]+)(?:\.git)?", url, re.IGNORECASE)
-        if match:
-            return match.group(1), match.group(2)
-        return None
 
     def get_online_module(self, track, zip_file):
         @Result.catching()
@@ -110,7 +99,7 @@ class Index:
             
             # Try to fetch GitHub stars if source is a valid GitHub URL
             if self._github_api and track.source:
-                repo_info = self._extract_github_repo(track.source)
+                repo_info = GitUtils._get_repo_name_from_url(track.source)
                 if repo_info:
                     owner, repo = repo_info
                     try:
