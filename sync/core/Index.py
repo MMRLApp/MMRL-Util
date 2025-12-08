@@ -99,7 +99,7 @@ class Index:
             
             # Try to fetch GitHub stars if source is a valid GitHub URL
             if self._github_api and track.source:
-                repo_info = GitUtils._get_repo_name_from_url(track.source)
+                repo_info = GitUtils.get_repo_name_from_url(track.source)
                 if repo_info:
                     owner, repo = repo_info
                     try:
