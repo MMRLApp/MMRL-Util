@@ -50,7 +50,6 @@ class LocalModule(AttrDict):
     cover: str
     screenshots: list[str]
     license: str
-    screenshots: list[str]
     readme: str
     require: list[str]
     verified: bool
